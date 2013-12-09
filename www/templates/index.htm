@@ -1,0 +1,135 @@
+﻿<!DOCT text/html>
+<html>
+	<head>
+		<title>CoNXTroll3r</title>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+		<script src="/yaw.js" ></script>
+		<script>
+			var speed = {move_speed};
+			var distance = {move_distance};
+			var degrees = {move_degrees};
+			
+			$(function() {{
+				$.get('/images/CR.png'); // load the error image into memory, to indicate error if the server goes down
+			}});
+			
+			$(document).keydown(function(e){{
+				console.log(e.which);
+				switch(e.which) {{
+					case 37: W(); break; // left
+					case 38: N(); break; // up
+					case 39: E(); break; // right
+					case 40: S(); break; // down
+					default: return; // exit this handler for other keys
+				}}
+				e.preventDefault();
+			}});
+			
+			function move(kind, direction, amount, speed)
+			{{
+				if (!speed) {{speed=100;}}
+				$.ajax({{
+					'type': 'POST',
+					'url': '/move',
+					'data': {{'kind':kind, 'direction':direction, 'amount':amount, 'speed':speed}},
+					'success': check,
+					'error': error,
+					'dataType': 'text'
+				}});
+			}}
+			
+			function check(data) {{if (data) {{}} else {{}}}}
+			function success(){{$("#c").attr("src","/images/CG.png");}}
+			function error(){{$("#c").attr("src","/images/CR.png");}}
+			
+			function NW(){{move('pivot', 'left', degrees, speed);}}
+			function N (){{move('move', 'forward', distance, speed);}}
+			function NE(){{move('pivot', 'right', degrees, speed);}}
+			
+			function W (){{move('spin', 'left', degrees, speed);}}
+			function C (){{success();}}
+			function E (){{move('spin', 'right', degrees, speed);}}
+			
+			function SW(){{move('pivot', 'left', -degrees, speed);}}
+			function S (){{move('move', 'backward', distance, speed);}}
+			function SE(){{move('pivot', 'right', -degrees, speed);}}
+		</script>
+		<style>
+			body {{
+				margin:10px;
+			}}
+			.key {{
+				width:50px;
+				height:50px;
+			}}
+			.lock {{
+				cursor:pointer;
+				width:50px;
+				height:50px;
+			}}
+			td {{
+				padding:0px;
+			}}
+			table {{
+				line-height:0px;
+				border-spacing:0px;
+				margin:auto;
+			}}
+			#disclaimer {{
+				display:inline-block;
+				line-height:100%;
+				background:#E0E0E0;
+				height:30px;
+				margin:10px;
+				padding:5px;
+				margin-bottom:0px;
+			}}
+		</style>
+		<meta name="application-name" content="CoNXTroller"/> 
+		<meta name="msapplication-TileColor" content="#ffcc00"/> 
+		<meta name="msapplication-TileImage" content="/images/brick.png"/>
+	</head>
+	<body background="/images/wood.png" >
+		<table>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td background="/images/feed.png" width="640px" height="480px" style="padding:10px;" >
+								<img id="camImg" src="/img/loading.jpg" onLoad="updateID();startPoll();"
+								onError="reloadImage();" style="width: 640px; height: 480px;" >
+							</td>
+						</tr>
+						<tr style="text-align:center;">
+							<td>
+								<div id="disclaimer" >
+									LEGO® is a trademark of the LEGO Group of companies <br>
+									which does not sponsor, authorize or endorse this site
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td width="300px" style="padding-left:10px;">
+					<table background="/images/controls.png" style="padding:20px;" >
+						<tr>
+							<td onclick="NW()" class="lock" ><img src="/images/NW.png" class="key" id="nw" /></td>
+							<td onclick=" N()"  class="lock" ><img src="/images/N.png"  class="key" id="n"  /></td>
+							<td onclick="NE()" class="lock" ><img src="/images/NE.png" class="key" id="ne" /></td>
+						</tr>
+						<tr>
+							<td onclick="W()" class="lock" ><img src="/images/W.png"  class="key" id="w" /></td>
+							<td onclick="C()" class="stat" ><img src="/images/CG.png" class="key" id="c" /></td>
+							<td onclick="E()" class="lock" ><img src="/images/E.png"  class="key" id="e" /></td>
+						</tr>
+						<tr>
+							<td onclick="SW()" class="lock" ><img src="/images/SW.png" class="key" id="sw" /></td>
+							<td onclick=" S()" class="lock" ><img src="/images/S.png"  class="key" id="s"  /></td>
+							<td onclick="SE()" class="lock" ><img src="/images/SE.png" class="key" id="se" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
