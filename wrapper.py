@@ -31,6 +31,13 @@ class Wrapper:
 		self.robot = robot
 		self.wheels = Wheels(left, right, diameter, track)
 	
+	def is_moving(self):
+		if self.robot.motordevice.get_speed(0)\
+		or self.robot.motordevice.get_speed(1)\
+		or self.robot.motordevice.get_speed(2)\
+		or self.robot.motordevice.get_speed(3):
+			return True
+	
 	def step_sync(self, speed, turn, degrees):
 		try:
 			speed = int_in_range(speed, -100, 100)

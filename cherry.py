@@ -26,6 +26,8 @@ class Root:
 	def move(self, kind="move", speed="20", direction="forward", amount="10"):
 		if amount == "0":
 			raise Exception("Invalid amount 0")
+		if self.robot.is_moving():
+			raise Exception("Robot already in motion")
 		if kind == "move":
 			if direction == "forward":
 				self.robot.move(speed, amount)

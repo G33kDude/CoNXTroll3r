@@ -1,0 +1,29 @@
+body {
+	margin:10px;
+}
+.key {
+	width:50px;
+	height:50px;
+}
+.lock {
+	cursor:pointer;
+	width:50px;
+	height:50px;
+}
+td {
+	padding:0px;
+}
+table {
+	line-height:0px;
+	border-spacing:0px;
+	margin:auto;
+}
+#disclaimer {
+	display:inline-block;
+	line-height:100%;
+	background:#E0E0E0;
+	height:30px;
+	margin:10px;
+	padding:5px;
+	margin-bottom:0px;
+}
