@@ -2,59 +2,40 @@
 <html>
 	<head>
 		<title>CoNXTroll3r</title>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+		<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="index.css" />
-		<script src="index.js" ></script>
-		<!-- <script src="yaw.js" ></script> -->
+		<script src="index.js"></script>
 		<script>
 			var speed = 180;
 			var distance = 180;
 			var degrees = 90;
 		</script>
-		<meta name="application-name" content="CoNXTroller"/> 
-		<meta name="msapplication-TileColor" content="#ffcc00"/> 
-		<meta name="msapplication-TileImage" content="/images/brick.png"/>
 	</head>
-	<body background="/images/wood.png" >
-		<table>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td background="/images/feed.png" width="640px" height="480px" style="padding:10px;" >
-								<img id="camImg" src="http://192.168.110.119:8080/?action=stream">
-							</td>
-						</tr>
-						<tr style="text-align:center;">
-							<td>
-								<div id="disclaimer" >
-									LEGO® is a trademark of the LEGO Group of companies <br>
-									which does not sponsor, authorize or endorse this site
-								</div>
-							</td>
-						</tr>
-					</table>
-				</td>
-				<td width="300px" style="padding-left:10px;">
-					<table background="/images/controls.png" style="padding:20px;" >
-						<tr>
-							<td onclick="NW()" class="lock" ><img src="/images/NW.png" class="key" id="nw" /></td>
-							<td onclick=" N()"  class="lock" ><img src="/images/N.png"  class="key" id="n"  /></td>
-							<td onclick="NE()" class="lock" ><img src="/images/NE.png" class="key" id="ne" /></td>
-						</tr>
-						<tr>
-							<td onclick="W()" class="lock" ><img src="/images/W.png"  class="key" id="w" /></td>
-							<td onclick="C()" class="stat" ><img src="/images/CG.png" class="key" id="c" /></td>
-							<td onclick="E()" class="lock" ><img src="/images/E.png"  class="key" id="e" /></td>
-						</tr>
-						<tr>
-							<td onclick="SW()" class="lock" ><img src="/images/SW.png" class="key" id="sw" /></td>
-							<td onclick=" S()" class="lock" ><img src="/images/S.png"  class="key" id="s"  /></td>
-							<td onclick="SE()" class="lock" ><img src="/images/SE.png" class="key" id="se" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+	<body>
+		<header>
+			CoNXTroll3r
+		</header>
+		<div class="content-wrapper">
+			<div class="content">
+				<img class="stream" src="http://192.168.110.119:8080/?action=stream" alt="Video goes here" />
+				<div class="controls">
+					<div class="move curve" id="nw"></div>
+					<div class="move arrow" id="n" ></div>
+					<div class="move curve" id="ne"></div>
+					<div class="move arrow" id="w" ></div>
+					<div class="status" id="c" ></div>
+					<div class="move arrow" id="e" ></div>
+					<div class="move curve" id="sw"></div>
+					<div class="move arrow" id="s" ></div>
+					<div class="move curve" id="se"></div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<div id="disclaimer" >
+				LEGO® is a trademark of the LEGO Group of companies <br>
+				which does not sponsor, authorize or endorse this site
+			</div>
+		</footer>
 	</body>
 </html>
