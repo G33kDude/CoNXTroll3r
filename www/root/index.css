@@ -61,7 +61,6 @@ header {
 }
 
 .move {
-	/* background-color: #E00; */
 	width: 50px; height: 50px;
 	display: inline-block;
 	margin: 10px 5px 0;
@@ -72,15 +71,16 @@ header {
 }
 
 .arrow {
-	background-image: url("images/N.png");
+	background-image: url("images/arrow.png");
 }
 
 .curve {
-	background-image: url("images/NW.png");
+	background-image: url("images/curved_arrow.png");
 }
 
 .status {
-	background-image: url("images/CG.png");
+	background-color: #E00000;
+	border-radius: 10px;
 }
 
 #ne { transform: scale(-1, 1); }
