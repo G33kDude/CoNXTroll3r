@@ -1,22 +1,31 @@
-$(function() {
-	$.get('/images/CR.png'); // load the error image into memory, to indicate error if the server goes down
+$(document).ready(function(){
+	$("#nw").click(function(){ move('pivot', 'left', degrees, speed); });
+	$("#n").click(function(){ move('move', 'forward', distance, speed); });
+	$("#ne").click(function(){ move('pivot', 'right', degrees, speed); });
+	
+	$("#w").click(function(){ move('spin', 'left', degrees, speed); });
+	$("#c").click(function(){ move('wave', 'around', degrees, speed); });
+	$("#e").click(function(){ move('spin', 'right', degrees, speed); });
+	
+	$("#sw").click(function(){ move('pivot', 'left', -degrees, speed); });
+	$("#s").click(function(){ move('move', 'backward', distance, speed); });
+	$("#se").click(function(){ move('pivot', 'right', -degrees, speed); });
 });
 
-$(document).keydown(function(e){
+$(document).keydown(function(e) {
 	console.log(e.which);
 	switch(e.which) {
-		case 37: W(); break; // left
-		case 38: N(); break; // up
-		case 39: E(); break; // right
-		case 40: S(); break; // down
+		case 32: move('wave', 'around', distance, speed); break; // space
+		case 37: move('spin', 'left', degrees, speed); break; // left
+		case 38: move('move', 'forward', distance, speed); break; // up
+		case 39: move('spin', 'right', degrees, speed); break; // right
+		case 40: move('move', 'backward', distance, speed); break; // down
 		default: return; // exit this handler for other keys
 	}
 	e.preventDefault();
 });
 
-function move(kind, direction, amount, speed)
-{
-	if (!speed) {speed=100;}
+function move(kind, direction, amount, speed) {
 	$.ajax({
 		'type': 'POST',
 		'url': '/move',
@@ -27,18 +36,17 @@ function move(kind, direction, amount, speed)
 	});
 }
 
-function check(data) {if (data) {error();} else {success();}}
-function success(){$("#c").attr("src","/images/CG.png");}
-function error(){$("#c").attr("src","/images/CR.png");}
+function check(data) {
+	if (data) {
+		error();
+	} else {
+		success();
+	}
+}
 
-function NW(){move('pivot', 'left', degrees, speed);}
-function N (){move('move', 'forward', distance, speed);}
-function NE(){move('pivot', 'right', degrees, speed);}
-
-function W (){move('spin', 'left', degrees, speed);}
-function C (){success();}
-function E (){move('spin', 'right', degrees, speed);}
-
-function SW(){move('pivot', 'left', -degrees, speed);}
-function S (){move('move', 'backward', distance, speed);}
-function SE(){move('pivot', 'right', -degrees, speed);}
+function success() {
+	$("#c").attr("src","/images/CG.png");
+}
+function error() {
+	$("#c").attr("src","/images/CR.png");
+}

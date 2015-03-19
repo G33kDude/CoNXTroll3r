@@ -65,9 +65,11 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 				raise Exception("Unknown direction {}".format(direction))
 		elif kind == "pivot":
 			if direction == "left":
+				motors.left_motor.position_sp = 0
 				motors.right_motor.position_sp = amount
 			elif direction == "right":
 				motors.left_motor.position_sp = amount
+				motors.right_motor.position_sp = 0
 			else:
 				raise Exception("Unknown direction {}".format(direction))
 		elif kind == "spin":
@@ -79,6 +81,18 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 				motors.left_motor.position_sp = amount
 			else:
 				raise Exception("Unknown direction {}".format(direction))
+		elif kind == "wave":
+			motors.position_sp = 0
+			arm.position_sp = -45
+			arm.run = 1
+			while arm.run:
+				pass
+			arm.position_sp = 45
+			arm.run = 1
+			while arm.run:
+				pass
+			arm.position_sp = 0
+			arm.run = 1
 		else:
 			raise Exception("Unknown movement type {}".format(kind))
 		
@@ -110,12 +124,14 @@ motors.run_mode = "position"
 motors.regulation_mode = "on"
 motors.pulses_per_second_sp = 0
 
-# arm = pyev3.Motor(pyev3.OUTPUT_A)
-# arm.reset()
-# arm.run_mode = "position"
-# arm.position_sp = 0
-# arm.duty_cycle_sp = 100
-# arm.stop_mode = 'hold'
+arm = pyev3.Motor(pyev3.OUTPUT_A)
+arm.reset()
+arm.run_mode = "position"
+arm.regulation_mode = "on"
+arm.position = 0
+arm.position_sp = 0
+arm.pulses_per_second_sp = 180
+arm.stop_mode = 'hold'
 
 PORT = 8081
 

@@ -60,7 +60,7 @@ header {
 	font-size: 0;
 }
 
-.move, .status {
+.move {
 	/* background-color: #E00; */
 	width: 50px; height: 50px;
 	display: inline-block;
@@ -79,11 +79,13 @@ header {
 	background-image: url("images/NW.png");
 }
 
+.status {
+	background-image: url("images/CG.png");
+}
+
 #ne { transform: scale(-1, 1); }
 
 #w { transform: rotate(270deg); }
-
-#c { background-image: url("images/CG.png"); }
 
 #e { transform: rotate(90deg); }
 
