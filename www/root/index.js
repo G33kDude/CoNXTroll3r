@@ -1,3 +1,12 @@
+function move(kind, direction, amount, speed) {
+	$.ajax({
+		'type': 'POST',
+		'url': '/move',
+		'data': {'kind':kind, 'direction':direction, 'amount':amount, 'speed':speed},
+		'dataType': 'text'
+	});
+}
+
 $(document).ready(function(){
 	$("#nw").click(function(){ move('pivot', 'left', degrees, speed); });
 	$("#n").click(function(){ move('move', 'forward', distance, speed); });
@@ -24,29 +33,3 @@ $(document).keydown(function(e) {
 	}
 	e.preventDefault();
 });
-
-function move(kind, direction, amount, speed) {
-	$.ajax({
-		'type': 'POST',
-		'url': '/move',
-		'data': {'kind':kind, 'direction':direction, 'amount':amount, 'speed':speed},
-		'success': check,
-		'error': error,
-		'dataType': 'text'
-	});
-}
-
-function check(data) {
-	if (data) {
-		error();
-	} else {
-		success();
-	}
-}
-
-function success() {
-	$("#c").attr("src","/images/CG.png");
-}
-function error() {
-	$("#c").attr("src","/images/CR.png");
-}
