@@ -19,15 +19,21 @@
 			<div class="content">
 				<img class="stream" src="http://geekdude.no-ip.org:8080/?action=stream" alt="Video goes here" />
 				<div class="controls">
-					<div class="move curve" id="nw"></div>
-					<div class="move arrow" id="n"></div>
-					<div class="move curve" id="ne"></div>
-					<div class="move arrow" id="w"></div>
-					<div class="move status" id="c"></div>
-					<div class="move arrow" id="e"></div>
-					<div class="move curve" id="sw"></div>
-					<div class="move arrow" id="s"></div>
-					<div class="move curve" id="se"></div>
+					<div class="floating" id="dpad">
+						<div class="curve" id="nw"></div>
+						<div class="arrow" id="n"></div>
+						<div class="curve" id="ne"></div>
+						<div class="arrow" id="w"></div>
+						<div class="status" id="c"></div>
+						<div class="arrow" id="e"></div>
+						<div class="curve" id="sw"></div>
+						<div class="arrow" id="s"></div>
+						<div class="curve" id="se"></div>
+					</div>
+					<form class="floating" id="speak" action="#">
+						<input type="text" id="speak-text" />
+						<input type="submit" value="speak" id="speak-submit" />
+					</form>
 				</div>
 			</div>
 		</div>

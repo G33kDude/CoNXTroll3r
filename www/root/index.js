@@ -19,10 +19,24 @@ $(document).ready(function(){
 	$("#sw").click(function(){ move('pivot', 'left', -degrees, speed); });
 	$("#s").click(function(){ move('move', 'backward', distance, speed); });
 	$("#se").click(function(){ move('pivot', 'right', -degrees, speed); });
+	
+	$("#speak").submit(function(e) {
+		$.ajax({
+			'type': 'POST',
+			'url': '/speak',
+			'data': {'text': $("#speak-text").val()},
+			'dataType': 'text'
+		});
+		$("#speak-text").val("");
+		e.preventDefault();
+	});
 });
 
 $(document).keydown(function(e) {
-	console.log(e.which);
+	var activeElement = $(document.activeElement)
+	if (activeElement.prop("tagName") == "INPUT") {
+		return;
+	}
 	switch(e.which) {
 		case 32: move('wave', 'around', distance, speed); break; // space
 		case 37: move('spin', 'left', degrees, speed); break; // left
