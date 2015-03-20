@@ -1,6 +1,8 @@
 import os
+import pipes
 import SimpleHTTPServer
 import SocketServer
+import subprocess
 import sys
 import urllib
 import urlparse
@@ -9,8 +11,10 @@ import pyev3
 
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	def do_POST(self):
-		if self.path != "/move":
-			return self.send_response(404) # Not Found
+		mname = "action_" + self.path[1:]
+		if not hasattr(self, mname):
+			return self.send_response(404)
+		method = getattr(self, mname)
 		
 		if "content-type" not in self.headers:
 			return self.send_response(415) # Unsupported Media Type
@@ -35,16 +39,20 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		print query
 		
 		try:
-			self.move(**query)
+			response = method(**query)
 		except: # Naughty, I know
 			return self.send_response(500) # Internal Server Error
 		
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
 		self.end_headers()
-		self.wfile.write(query)
+		self.wfile.write(response)
 	
-	def move(self, kind="move", speed="20", direction="forward", amount="10"):
+	def action_speak(self, text):
+		command = "espeak -a 200 -s 80 --stdout {} | aplay".format(pipes.quote(text))
+		subprocess.Popen(command, shell=True)
+	
+	def action_move(self, kind="move", speed="20", direction="forward", amount="10"):
 		global motors
 		
 		amount = int(amount) # Exceptions get handled in move caller
