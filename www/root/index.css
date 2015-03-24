@@ -89,12 +89,12 @@ header {
 	border-radius: 10px;
 }
 
-#ne { transform: scale(-1, 1); }
-#w { transform: rotate(270deg); }
-#e { transform: rotate(90deg); }
-#sw { transform: scale(1, -1); }
-#s { transform: rotate(180deg); }
-#se { transform: scale(-1, -1); }
+#ne { transform: scale(-1, 1); -webkit-transform: scale(-1, 1); }
+#w { transform: rotate(270deg); -webkit-transform: rotate(270deg); }
+#e { transform: rotate(90deg); -webkit-transform: rotate(90deg); }
+#sw { transform: scale(1, -1); -webkit-transform: scale(1, -1); }
+#s { transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+#se { transform: scale(-1, -1); -webkit-transform: scale(-1, -1); }
 
 #speak {
 	margin-top: 10px;
