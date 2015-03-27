@@ -32,7 +32,7 @@ $(document).ready(function(){
 	});
 });
 
-$(document).keydown(function(e) {
+$(document).keyup(function(e) {
 	var activeElement = $(document.activeElement)
 	if (activeElement.prop("tagName") == "INPUT") {
 		return;
