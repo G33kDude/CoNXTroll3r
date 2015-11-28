@@ -6,42 +6,41 @@ import subprocess
 import sys
 import urllib
 import urlparse
+import time
 
-import pyev3
+import ev3dev.core
+
+SERVER_PORT = 8081
+
+LEFT_MOTOR = "outB"
+RIGHT_MOTOR = "outC"
+ARM_MOTOR = "outA"
+
+def motor_block_until_finished(motor):
+	while 'running' not in motor.state:
+		pass
+	while 'running' in motor.state:
+		pass
 
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	def do_POST(self):
-		mname = "action_" + self.path[1:]
-		if not hasattr(self, mname):
+		try:
+			mname = "action_" + self.path[1:]
+			method = getattr(self, mname)
+		except AttributeError:
 			return self.send_response(404)
-		method = getattr(self, mname)
-		
-		if "content-type" not in self.headers:
-			return self.send_response(415) # Unsupported Media Type
-		
-		required_ctype = "application/x-www-form-urlencoded"
-		if required_ctype not in self.headers["content-type"]:
-			return self.send_response(415) # Unsupported Media Type
-		
-		if "content-length" not in self.headers:
-			return self.send_response(411) # Length Required
 		
 		try:
 			clength = int(self.headers["content-length"])
-		except ValueError:
+			form_data = self.rfile.read(clength)
+			query = dict(urlparse.parse_qsl(form_data, keep_blank_values=True))
+		except (KeyError, ValueError):
 			return self.send_response(400) # Bad Request
 		
-		form_data = self.rfile.read(clength)
-		
-		# Similar to parse_qs, but only gives 1 value per key
-		query = dict(urlparse.parse_qsl(form_data, keep_blank_values=True))
-		
-		print query
-		
-		try:
-			response = method(**query)
-		except: # Naughty, I know
-			return self.send_response(500) # Internal Server Error
+#		try:
+		response = method(**query)
+#		except:
+#			return self.send_response(500) # Internal Server Error
 		
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
@@ -54,100 +53,53 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	
 	def action_move(self, kind="move", speed="20", direction="forward", amount="10"):
 		global motors
-		
 		amount = int(amount) # Exceptions get handled in move caller
+		speed = int(speed)
+		
+		print (kind, speed, direction, amount)
 		
 		if amount == 0:
 			raise Exception("Invalid amount 0")
-		if motors.left_motor.run or motors.right_motor.run:
+		if 'running' in (motors['left'].state + motors['right'].state + motors['arm'].state):
 			raise Exception("Robot already in motion")
 		
-		motors.pulses_per_second_sp = speed
-		motors.position = 0
-		if kind == "move":
-			if direction == "forward":
-				motors.position_sp = amount
-			elif direction == "backward":
-				motors.position_sp = -amount
-			else:
-				raise Exception("Unknown direction {}".format(direction))
-		elif kind == "pivot":
-			if direction == "left":
-				motors.left_motor.position_sp = 0
-				motors.right_motor.position_sp = amount
-			elif direction == "right":
-				motors.left_motor.position_sp = amount
-				motors.right_motor.position_sp = 0
-			else:
-				raise Exception("Unknown direction {}".format(direction))
-		elif kind == "spin":
-			if direction == "left":
-				motors.right_motor.position_sp = amount
-				motors.left_motor.position_sp = -amount
-			elif direction == "right":
-				motors.right_motor.position_sp = -amount
-				motors.left_motor.position_sp = amount
-			else:
-				raise Exception("Unknown direction {}".format(direction))
+		if kind in ('move', 'pivot', 'spin'):
+			left_amount, right_amount = {
+				'move': {'forward': (amount, amount), 'backward': (-amount, -amount)},
+				'pivot': {'left': (0, amount), 'right': (amount, 0)},
+				'spin': {'left': (-amount, amount), 'right': (amount, -amount)}
+			}[kind][direction]
+			print (left_amount, right_amount, speed)
+			motors['left'].run_to_rel_pos(position_sp = left_amount, speed_sp = speed)
+			motors['right'].run_to_rel_pos(position_sp = right_amount, speed_sp = speed)
+			time.sleep(1)
 		elif kind == "wave":
-			motors.position_sp = 0
-			arm.position_sp = -45
-			arm.run = 1
-			while arm.run:
-				pass
-			arm.position_sp = 45
-			arm.run = 1
-			while arm.run:
-				pass
-			arm.position_sp = 0
-			arm.run = 1
+			motors['arm'].run_to_abs_pos(position_sp=-45, speed_sp=180)
+			motor_block_until_finished(motors['arm'])
+			motors['arm'].run_to_abs_pos(position_sp=45, speed_sp=180)
+			motor_block_until_finished(motors['arm'])
+			motors['arm'].run_to_abs_pos(position_sp=0, speed_sp=180)
+			#motor_block_until_finished(motors['arm'])
 		else:
 			raise Exception("Unknown movement type {}".format(kind))
-		
-		motors.run = 1
 
-class Motors(object):
-	def __init__(self, left_motor_port, right_motor_port):
-		object.__setattr__(self, 'left_motor', pyev3.Motor(left_motor_port))
-		object.__setattr__(self, 'right_motor', pyev3.Motor(right_motor_port))
+if __name__ == '__main__':
+	motors = {
+		'left': ev3dev.core.LargeMotor(LEFT_MOTOR),
+		'right': ev3dev.core.LargeMotor(RIGHT_MOTOR),
+		'arm': ev3dev.core.MediumMotor(ARM_MOTOR)
+	}
+	for motor in motors:
+		motors[motor].reset()
+		motors[motor].speed_regulation_enabled = "on"
 	
-	def __getattr__(self, attr):
-		return self.left_motor.__getattr__(attr)
-	
-	def __setattr__(self, attr, value):
-		self.left_motor.__setattr__(attr, value)
-		self.right_motor.__setattr__(attr, value)
-	
-	def are_running(self):
-		return self.left_motor.run or self.right_motor.run
-	
-	def reset(self):
-		self.left_motor.reset()
-		self.right_motor.reset()
-
-motors = Motors(pyev3.OUTPUT_B, pyev3.OUTPUT_C)
-
-motors.reset()
-motors.run_mode = "position"
-motors.regulation_mode = "on"
-motors.pulses_per_second_sp = 0
-
-arm = pyev3.Motor(pyev3.OUTPUT_A)
-arm.reset()
-arm.run_mode = "position"
-arm.regulation_mode = "on"
-arm.position = 0
-arm.position_sp = 0
-arm.pulses_per_second_sp = 180
-arm.stop_mode = 'hold'
-
-PORT = 8081
-
-os.chdir("./www/root")
-
-SocketServer.TCPServer.allow_reuse_address = True
-httpd = SocketServer.TCPServer(("", PORT), MyHandler)
-try:
-	httpd.serve_forever()
-finally:
-	motors.run = 0
+	os.chdir("./www/root")
+	# Allow new instances of the script to use the port even if the old one died unexpectedly
+	SocketServer.TCPServer.allow_reuse_address = True
+	httpd = SocketServer.TCPServer(("", SERVER_PORT), MyHandler)
+	print("Running on port {}".format(SERVER_PORT))
+	try:
+		httpd.serve_forever()
+	finally:
+		for motor in motors:
+			motors[motor].stop()
